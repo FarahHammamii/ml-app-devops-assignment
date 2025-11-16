@@ -3,6 +3,7 @@ from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import os
 
+
 class IrisClassifier:
     def __init__(self, random_state=42):
         self.model = LogisticRegression(random_state=random_state, max_iter=200)
