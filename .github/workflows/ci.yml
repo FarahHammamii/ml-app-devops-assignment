@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'
         
       - name: Cache pip dependencies
         uses: actions/cache@v3
@@ -95,7 +95,7 @@ jobs:
           echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Code checkout: Success" >> $GITHUB_STEP_SUMMARY
-          echo "Python setup: 3.9" >> $GITHUB_STEP_SUMMARY
+          echo "Python setup: 3.11" >> $GITHUB_STEP_SUMMARY
           echo "Dependencies installed" >> $GITHUB_STEP_SUMMARY
           echo "Linting: Passed" >> $GITHUB_STEP_SUMMARY
           echo "Tests: Passed" >> $GITHUB_STEP_SUMMARY
