@@ -11,98 +11,97 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
         
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
           
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install flake8 pytest pytest-cov
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 pytest pytest-cov
         
-    - name: Run linter (flake8)
-      run: |
-        echo "Running flake8 linter..."
-        flake8 src/ tests/ --count --show-source --statistics
-        echo "Linting passed - no violations found"
+      - name: Run linter (flake8)
+        run: |
+          echo "Running flake8 linter..."
+          flake8 src/ tests/ --count --show-source --statistics
+          echo "Linting passed - no violations found"
         
-    - name: Create models directory
-      run: |
-        mkdir -p models
+      - name: Create models directory
+        run: mkdir -p models
         
-    - name: Run tests with pytest
-      run: |
-        echo "Running pytest with coverage..."
-        pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing --junitxml=test-results.xml
-        echo "All tests passed"
+      - name: Run tests with pytest
+        run: |
+          echo "Running pytest with coverage..."
+          pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing --junitxml=test-results.xml
+          echo "All tests passed"
         
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: test-results.xml
-        retention-days: 7
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.xml
+          retention-days: 7
         
-    - name: Upload coverage report
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage-report
-        path: coverage.xml
-        retention-days: 7
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 7
         
-    - name: Build Docker image
-      run: |
-        echo "Building Docker image..."
-        docker build -t iris-classifier:${{ github.sha }} -t iris-classifier:latest .
-        echo "Docker image built successfully"
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image..."
+          docker build -t iris-classifier:${{ github.sha }} -t iris-classifier:latest .
+          echo "Docker image built successfully"
         
-    - name: Test Docker image
-      run: |
-        echo "Testing Docker image..."
-        docker run --rm iris-classifier:latest python -c "import sys; print(f'Python {sys.version}'); import sklearn; print(f'scikit-learn {sklearn.__version__}')"
-        echo "Docker image is functional"
+      - name: Test Docker image
+        run: |
+          echo "Testing Docker image..."
+          docker run --rm iris-classifier:latest python -c "import sys; print(f'Python {sys.version}'); import sklearn; print(f'scikit-learn {sklearn.__version__}')"
+          echo "Docker image is functional"
         
-    - name: Save Docker image as artifact
-      run: |
-        echo "Saving Docker image..."
-        docker save iris-classifier:${{ github.sha }} -o iris-classifier-image.tar
-        echo "Docker image saved"
+      - name: Save Docker image as artifact
+        run: |
+          echo "Saving Docker image..."
+          docker save iris-classifier:${{ github.sha }} -o iris-classifier-image.tar
+          echo "Docker image saved"
         
-    - name: Upload Docker image artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: docker-image
-        path: iris-classifier-image.tar
-        retention-days: 7
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: iris-classifier-image.tar
+          retention-days: 7
         
-    - name: Display workflow summary
-      if: always()
-      run: |
-        echo "##CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Code checkout: Success" >> $GITHUB_STEP_SUMMARY
-        echo "Python setup: 3.9" >> $GITHUB_STEP_SUMMARY
-        echo "Dependencies installed" >> $GITHUB_STEP_SUMMARY
-        echo "Linting: Passed" >> $GITHUB_STEP_SUMMARY
-        echo "Tests: Passed" >> $GITHUB_STEP_SUMMARY
-        echo "Docker image: Built" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Artifacts:" >> $GITHUB_STEP_SUMMARY
-        echo "- Test results (test-results.xml)" >> $GITHUB_STEP_SUMMARY
-        echo "- Coverage report (coverage.xml)" >> $GITHUB_STEP_SUMMARY
-        echo "- Docker image (iris-classifier-image.tar)" >> $GITHUB_STEP_SUMMARY
+      - name: Display workflow summary
+        if: always()
+        run: |
+          echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Code checkout: Success" >> $GITHUB_STEP_SUMMARY
+          echo "Python setup: 3.9" >> $GITHUB_STEP_SUMMARY
+          echo "Dependencies installed" >> $GITHUB_STEP_SUMMARY
+          echo "Linting: Passed" >> $GITHUB_STEP_SUMMARY
+          echo "Tests: Passed" >> $GITHUB_STEP_SUMMARY
+          echo "Docker image: Built" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Artifacts:" >> $GITHUB_STEP_SUMMARY
+          echo "- Test results (test-results.xml)" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage report (coverage.xml)" >> $GITHUB_STEP_SUMMARY
+          echo "- Docker image (iris-classifier-image.tar)" >> $GITHUB_STEP_SUMMARY
