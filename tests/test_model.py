@@ -3,15 +3,10 @@ Unit tests for model.py
 Tests model training and prediction functionality
 """
 
-import sys
-import os
 import pytest
 import numpy as np
-from data_loader import load_iris_data
-from model import IrisClassifier
-
-# Add src to path so we can import modules
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+from src.data_loader import load_iris_data
+from src.model import IrisClassifier
 
 
 class TestIrisClassifier:
